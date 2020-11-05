@@ -43,7 +43,7 @@ layout = [
 ]
 
 
-window = sg.Window('Everything bagel', layout, default_element_size=(40, 1), grab_anywhere=False)
+window = sg.Window('Secured Payment Page', layout, default_element_size=(40, 1), grab_anywhere=False)
 
 event, values = window.read()
 
