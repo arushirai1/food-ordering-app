@@ -21,6 +21,7 @@ If you install anything use pip3, do ```pip3 freeze > requirements.txt```. This 
 
 After pulling you have to run:
 #in bash
+```bash
 psql
 create database foodorder;
 quit
@@ -29,6 +30,8 @@ export DATABASE_URL="postgresql://localhost/foodorder"
 export APP_SETTINGS="config.DevelopmentConfig"
 FLASK_APP=app.py
 python3 manage.py db init --directory migrations
+```
+
 ```python3 manage.py db upgrade```
 
 Run the app by:
