@@ -14,7 +14,7 @@ class Login extends React.Component {
     }
     goToCustomerView() {
         if(this.state.option === 'Customer') {
-
+            this.props.history.push("/listing")
         }
     }
     _onOptionChange(option) {
