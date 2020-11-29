@@ -5,8 +5,16 @@ import React, { Component } from 'react'
 import { Form, Button, ButtonGroup, ToggleButton, InputGroup } from 'react-bootstrap';
 import {CustomerLanding, StaffLanding, AdminLanding} from "./LandingPage";
 import { Route, Switch } from "react-router-dom";
-
+import {MenuSelection} from './MenuSelection'
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+
+//do this to import props
+const CustomerLandingWithRouter = withRouter(CustomerLanding);
+const MenuSelectionWithRouter = withRouter(MenuSelection);
+//const TitleWithRouter = withRouter(Title);
+
+
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -131,7 +139,10 @@ const App = ({ location }) => (
 
             <Switch>
                 <Route location={ location } exact path="/" render={ (props) => <Login {...props} /> } />
-                <Route location={ location } exact path="/listing" component={ CustomerLanding } /> } />
+                <Route location={ location } exact path="/listing" render={ (props) => <CustomerLandingWithRouter {...props} /> } />
+
+                <Route location={ location } exact path="/menuSelection" render={ (props) => <MenuSelectionWithRouter {...props} /> } />
+
             </Switch>
                 </header>
 

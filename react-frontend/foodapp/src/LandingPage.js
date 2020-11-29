@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import App from "./App";
 import {Restaurant} from "./Models"
 import { Form, Button, ButtonGroup, ToggleButton, InputGroup, Card } from 'react-bootstrap';
-
+import { withRouter } from 'react-router-dom'
 class RestaurantView extends React.Component {
   constructor(props) {
     super(props);
@@ -10,10 +10,20 @@ class RestaurantView extends React.Component {
   }
   componentDidMount() {
     //api call to fetch restaurants
-    this.setState({restaurants : [new Restaurant("PizzaParlor", "West Loop", "Most amazing burnt pizza in the world."),
-      new Restaurant("Pizza Parlor2", "West Loop2", "2nd most amazing burnt pizza in the world."),
-      new Restaurant("Cure Pizza Addiction Restaurant", "West Loop3", "We make sure you end up hating pizza after this.")
+    console.log(this.props)
+    this.setState({restaurants : [new Restaurant(1, "PizzaParlor", "West Loop", "Most amazing burnt pizza in the world."),
+      new Restaurant(2, "Pizza Parlor2", "West Loop2", "2nd most amazing burnt pizza in the world."),
+      new Restaurant(3, "Cure Pizza Addiction Restaurant", "West Loop3", "We make sure you end up hating pizza after this.")
     ]})
+  }
+  _onRestaurantSelect(restaurant_id) {
+    console.log(this.props)
+    this.props.history.push({
+      pathname: "/menuSelection",
+      state: {
+        restaurant_id: restaurant_id
+      }
+    })
   }
 
   render() {
@@ -29,7 +39,7 @@ class RestaurantView extends React.Component {
                 <Card.Text>
                   {restaurant.description}
                 </Card.Text>
-                <Button variant="primary">Start Order</Button>
+                <Button onClick={this._onRestaurantSelect.bind(this,restaurant.restaurant_id)} variant="primary">Start Order</Button>
               </Card.Body>
             </Card>
       ))}
@@ -49,10 +59,11 @@ class Cart extends React.Component {
 }
 class CustomerLanding extends React.Component {
   render() {
+    //review how props are past, this is how you overcome undefined props errors and along withRouter
     return (
         <div>
-           <Cart/>
-          <RestaurantView/>
+           <Cart />
+          <RestaurantView {...this.props}/>
         </div>
 
     );
