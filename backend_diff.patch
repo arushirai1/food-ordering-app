@@ -1,0 +1,87 @@
+diff --git a/backend/app.py b/backend/app.py
+index c52c0fa..b63ee1d 100644
+--- a/backend/app.py
++++ b/backend/app.py
+@@ -291,6 +291,17 @@ def logout():
+ 
+     return render_template('index.html', form = form)
+ 
++@app.route('/sign-up', methods=["GET"])
++def signup():
++    role = request.args.get('role')
++    username = request.args.get('username')
++    password = request.args.get('password')
++    user_id = db_methods.create_user(role, username, password)
++    # Assuming we want to immediately login the user after sign up
++    # (In real world there will be some verification step)
++    session['user_id'] = user_id
++    return render_template("after-signup-page.html")
++
+ def add_session_variables(user_id, state):
+     session['user_id'] = user_id
+     session['state'] = state
+diff --git a/backend/db_methods.py b/backend/db_methods.py
+index 4404afa..ffba012 100644
+--- a/backend/db_methods.py
++++ b/backend/db_methods.py
+@@ -1,7 +1,14 @@
+ 
+ import pdb
+ 
+-def validate_login(db,username, password):
++def create_user(db, role, username, password):
++	sql_string = "INSERT INTO USERS (role, username, password) VALUES ({}, {}, {});".format(user_id, role, username, password)
++	results = db.engine.execute(sql_string)
++	# Check if it successfully created the row
++	# Extract user_id of created user
++	return user_id
++
++def validate_login(db, username, password):
+     sql_string="select u_id,username,user_password from Users;"
+     results= db.engine.execute(sql_string)
+     for row in results:
+diff --git a/backend/db_setup.py b/backend/db_setup.py
+deleted file mode 100644
+index 4ca205a..0000000
+--- a/backend/db_setup.py
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#in psql
+-create database foodorder;
+-
+-#run in bash
+-export DATABASE_URL="postgresql://localhost/foodorder"
+-export APP_SETTINGS="config.DevelopmentConfig"
+-FLASK_APP=app.py
+\ No newline at end of file
+diff --git a/backend/migrations/versions/7397fe6a4860_.py b/backend/migrations/versions/7397fe6a4860_.py
+index 87d2297..5319247 100644
+--- a/backend/migrations/versions/7397fe6a4860_.py
++++ b/backend/migrations/versions/7397fe6a4860_.py
+@@ -26,7 +26,7 @@ def upgrade():
+     sa.PrimaryKeyConstraint('test_id')
+     )
+     op.create_table('users',
+-    sa.Column('user_id', sa.Integer(), nullable=False),
++    sa.Column('user_id', sa.Integer(), nullable=False, autoincrement=True),
+     sa.Column('role', sa.String(), nullable=True),
+     sa.Column('username', sa.String(), nullable=True),
+     sa.Column('password', sa.String(), nullable=True),
+diff --git a/backend/requirements.txt b/backend/requirements.txt
+index 76eab0a..1c0f80a 100644
+--- a/backend/requirements.txt
++++ b/backend/requirements.txt
+@@ -9,11 +9,11 @@ itsdangerous==1.1.0
+ Jinja2==2.10.3
+ Mako==1.1.0
+ MarkupSafe==1.1.1
+-psycopg2==2.8.4
+-psycopg2-binary==2.8.4
+ python-dateutil==2.8.1
+ python-editor==1.0.4
+ six==1.13.0
+ SQLAlchemy==1.3.11
+ Werkzeug==0.16.0
+ WTForms==2.2.1
++psycopg2==2.8.4
++psycopg2-binary==2.8.4
