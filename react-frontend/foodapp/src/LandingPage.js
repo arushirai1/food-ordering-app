@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
+import React, { Component, ListItem } from 'react'
 import App from "./App";
 import {Restaurant} from "./Models"
-import { Form, Button, ButtonGroup, ToggleButton, InputGroup, Card } from 'react-bootstrap';
+import { Form, Button, ButtonGroup, ToggleButton, InputGroup, Card, Modal } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom'
 class RestaurantView extends React.Component {
   constructor(props) {
@@ -39,7 +39,7 @@ class RestaurantView extends React.Component {
                 <Card.Text>
                   {restaurant.description}
                 </Card.Text>
-                <Button onClick={this._onRestaurantSelect.bind(this,restaurant.restaurant_id)} variant="primary">Start Order</Button>
+                <Button onClick={this._onRestaurantSelect.bind(this, restaurant.restaurant_id)} variant="primary">Start Order</Button>
               </Card.Body>
             </Card>
       ))}
@@ -49,20 +49,48 @@ class RestaurantView extends React.Component {
 }
 
 class Cart extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {'show': false};
+    console.log("cart", this.props.getSelectedDishes())
+
+  }
+  handleClose () {
+    this.setState({'show':false})
+  }
+  handleShow () {
+    this.setState({'show':true})
+  }
+
   render() {
     return (<div>
       <header style={{height:'1%'}} >
-                <Button style={{align:'right'}}>View Current Order</Button>
+                <Button style={{align:'right'}} onClick={this.handleShow.bind(this)}>View Current Order</Button>
       </header>
+
+      <Modal show={this.state.show} onHide={this.handleClose.bind(this)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Cart Items</Modal.Title>
+        </Modal.Header>
+        <Modal.Body><div>{Object.keys(this.props.getSelectedDishes()).forEach((key)=>(console.log(this.props.getSelectedDishes()[key].dish.name) ))}</div></Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={this.handleClose.bind(this)}>
+            Continue Shopping
+          </Button>
+          <Button variant="primary" onClick={this.handleClose.bind(this)}>
+            Checkout
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>)
   }
 }
 class CustomerLanding extends React.Component {
+
   render() {
     //review how props are past, this is how you overcome undefined props errors and along withRouter
     return (
         <div>
-           <Cart />
           <RestaurantView {...this.props}/>
         </div>
 
@@ -112,4 +140,4 @@ class AdminLanding extends React.Component {
   }
 }
 
-export {CustomerLanding, AdminLanding, StaffLanding};
+export {CustomerLanding, AdminLanding, StaffLanding, Cart};
