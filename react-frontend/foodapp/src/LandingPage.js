@@ -61,6 +61,15 @@ class Cart extends React.Component {
   handleShow () {
     this.setState({'show':true})
   }
+  _goCheckOut() {
+    console.log(this.props)
+    this.props.history.push({
+        pathname: "/checkoutView",
+        state: {
+            selected_checkout: this.props.getSelectedDishes()
+        }
+    })
+  }
 
   render() {
     return (<div>
@@ -72,12 +81,12 @@ class Cart extends React.Component {
         <Modal.Header closeButton>
           <Modal.Title>Cart Items</Modal.Title>
         </Modal.Header>
-        <Modal.Body><div>{Object.keys(this.props.getSelectedDishes()).forEach((key)=>(console.log(this.props.getSelectedDishes()[key].dish.name) ))}</div></Modal.Body>
+        <Modal.Body><div>{Object.keys(this.props.getSelectedDishes()).map((key)=>(<div> <h1>{this.props.getSelectedDishes()[key].dish.name}</h1> <h1>Quantity: {this.props.getSelectedDishes()[key].quantity}</h1></div> ))}</div></Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={this.handleClose.bind(this)}>
             Continue Shopping
           </Button>
-          <Button variant="primary" onClick={this.handleClose.bind(this)}>
+          <Button variant="primary" onClick={this._goCheckOut.bind(this)}>
             Checkout
           </Button>
         </Modal.Footer>
