@@ -99,7 +99,16 @@ class ChangeUserSettings extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state={'selectedAdd':false, 'addresses':this.props.location.state.order.addresses}
+    if(this.props.wait_time) {
+      this.state={'selectedAdd':false, 'addresses':this.props.location.state.order.addresses}
+
+    } else {
+      let m = [new Address(123, 1, '123 Fake St APT 3', 'Chicago', 'IL', 60616),
+        new Address(124, 1, '124 Fake St APT 2', 'Cupertino', 'CA', 95014)]
+      this.state={'selectedAdd':false, 'addresses':m}
+
+    }
+
     this.addresses=[]
     this._updateStateAdd.bind(this)
   }
@@ -131,23 +140,26 @@ _editAddress() {
 }
 _updateAddress(addr_id) {
     //remove
-  let old=null
+  console.log(addr_id)
+  let old=new Address(1,2,'','', '')
   let x = () => {
     for(let i=0; i<this.state.addresses.length; i++) {
-      if(this.state.addresses[i].address_id===parseInt(addr_id))
+      if(this.state.addresses[i].address_id===parseInt(addr_id)) {
+        console.log(this.state.addresses[i].address_id, parseInt(addr_id))
         old=this.state.addresses[i]
         return i
+      }
     }
   }
+  x()
+     this.state.addresses.splice(x(), 1, new Address(old.address_id, old.user_id, document.getElementById('addLine1').value, document.getElementById('state').value, document.getElementById('zip').value))
+    this.setState({selectedAdd:false})
 
-  this.state.addresses.splice(x(), 1, new Address(old.address_id, old.user_id, document.getElementById('addLine1').value, document.getElementById('state').value, document.getElementById('zip').value))
-  console.log(x(), this.state.addresses)
-  this.setState({selectedAdd:false})
+
   //this.props.location.state.order.addresses.put(new Address(this.state.selectedAdd[0], this.state.selectedAdd[1], this.state.selectedAdd[2]))
 }
 _deleteAddress() {
-      let addr_id = this.addresses.value
-  console.log("Address value", addr_id)
+      let addr_id = this.addresses.value.split(',')[0]
   let getIndex = () => {
     for(let i=0; i<this.state.addresses.length; i++) {
       if(this.state.addresses[i].address_line1===addr_id)
@@ -207,7 +219,7 @@ class MyProfile extends React.Component {
     super(props);
     let show = false
     let wait_time = 0
-    if(props.location) {
+    if(props.location.state) {
       if(props.location.state.modal) {
         show=true
         wait_time=props.location.state.wait_time
@@ -234,7 +246,7 @@ class MyProfile extends React.Component {
           <Modal.Title>My Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body><div><h1 style={{color:"blue"}}> Order history </h1> <h3>Wait Time for Current Order: {this.state.wait_time}</h3>
-        <ChangeUserSettings {...this.props}/>
+        <ChangeUserSettings {...this.props} wait_time={this.state.wait_time}/>
         </div></Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={this.handleClose.bind(this)}>
