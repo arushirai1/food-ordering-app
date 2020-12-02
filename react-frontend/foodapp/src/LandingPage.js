@@ -62,11 +62,12 @@ class Cart extends React.Component {
     this.setState({'show':true})
   }
   _goCheckOut() {
-    console.log(this.props)
+    let items=this.props.getSelectedDishes()
+    console.log(items)
     this.props.history.push({
         pathname: "/checkoutView",
         state: {
-            selected_checkout: this.props.getSelectedDishes()
+            selected_checkout: items
         }
     })
   }

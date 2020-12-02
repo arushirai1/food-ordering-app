@@ -1,6 +1,6 @@
 import React, { Component, ListItem } from 'react'
 import App from "./App";
-import {Restaurant} from "./Models"
+import {Restaurant, credit_card, Address} from "./Models"
 import { Form, Button, ButtonGroup, ToggleButton, InputGroup, Card, Modal } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom'
 
@@ -34,24 +34,74 @@ class Payment extends React.Component {
 class CheckoutView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {'restaurants': []}
+        this.state={'option':'Cash', 'selected_card': null, 'cards':[], 'addresses':[], 'selected_address': null, 'total_price':0}
+
     }
 
     componentDidMount() {
         //api call to fetch restaurants
-        console.log(this.props)
-        this.state={'option':'Cash'}
+        let credit_cards=[new credit_card(12, 1,1233435346,598), new credit_card(112, 1,1233437777,123)]
+        let addresses = [new Address(123, 1, '123 Fake St APT 3', 'Chicago', 'IL', 60616),
+        new Address(124, 1, '124 Fake St APT 2', 'Cupertino', 'CA', 95014)]
+        this.setState({'cards': credit_cards, 'addresses': addresses})
+        if(Object.keys(this.props.location.state).includes("selected_checkout")) {
+            let that = this
+            that.totalCost = 0
+
+            let dictionary= this.props.location.state.selected_checkout
+            console.log("enters")
+            Object.keys(dictionary).forEach((pair)=> that.totalCost+=(dictionary[pair].dish.cost* dictionary[pair].quantity))
+            this.setState({'total_price':that.totalCost})
+        }
     }
     _onOptionChange(method) {
         this.setState({'option':method})
     }
+    _filterCard(card) {
+        let str=card.toString()
+        let x = ""
+        for(let i=0; i<str.length; i++){
+            if(i+4 < str.length) {
+
+                x=x.concat("X")
+
+            } else {
+                x=x.concat(str[i])
+            }
+
+        }
+        return x
+    }
+    _renderCreditInput (){
+        if(this.state.option === 'Credit Card') {
+            console.log("test")
+            return (<div>
+                    <Form.Group controlId="paymentEnterCard" style={{marginRight:"20px"}}>
+                        <Form.Label>
+                            Credit Card Information
+                        </Form.Label>
+                        <Form.Control key="cardno" type="text" placeholder="Enter credit card #" />
+                        <Form.Control key="cvv" type="text" placeholder="Enter cvv" />
+                    </Form.Group>
+                    <Form.Group controlId="paymentSelectCard">
+                        <Form.Label>Select existing card</Form.Label>
+                        <Form.Control as="select">
+                            {this.state.cards.map((card)=>(<option>{this._filterCard(card.card_number)}</option>))}
+                        </Form.Control>
+                    </Form.Group>
+                </div>
+            )
+        }
+    }
     render() {
         return (<div>
-            <InputGroup  className="mb-3">
+            <h1>Total Price: {this.state.total_price}</h1>
+            <h1>Payment</h1>
                 <Form.Group controlId="choosePaymentMethod">
                     <Form.Label>
                         Select Payment Method
                     </Form.Label>
+
                     {['radio'].map((type) => (
                         <ButtonGroup style={{marginBottom:"20px"}}>
                             {['Cash', 'Credit Card'].map((method) => (
@@ -60,21 +110,10 @@ class CheckoutView extends React.Component {
                         </ButtonGroup>
                     ))}
                 </Form.Group>
-                {()=> {
-                    if(this.state.option == 'Credit Card') {
-                        return (
-                            <Form.Group controlId="paymentEnterCard" style={{marginRight:"20px"}}>
-                                <Form.Label>
-                                    Credit Card Information
-                                </Form.Label>
-                                <Form.Control type="text" placeholder="Enter credit card #" />
-                            </Form.Group>)
-                    }
-                }}
+                { this._renderCreditInput()}
 
 
 
-            </InputGroup>
         </div>)
     }
 

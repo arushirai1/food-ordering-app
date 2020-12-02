@@ -8,10 +8,12 @@ import { Route, Switch } from "react-router-dom";
 import {MenuSelection} from './MenuSelection'
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import {CheckoutView} from './CheckoutScreen'
 
 //do this to import props
 const CustomerLandingWithRouter = withRouter(CustomerLanding);
 const MenuSelectionWithRouter = withRouter(MenuSelection);
+const CheckoutViewWithRouter = withRouter(CheckoutView);
 //const TitleWithRouter = withRouter(Title);
 
 
@@ -142,6 +144,7 @@ const App = ({ location }) => (
                 <Route location={ location } exact path="/listing" render={ (props) => <CustomerLandingWithRouter {...props} /> } />
 
                 <Route location={ location } exact path="/menuSelection" render={ (props) => <MenuSelectionWithRouter {...props} /> } />
+                <Route location={ location } exact path="/checkoutView" render={ (props) => <CheckoutViewWithRouter {...props} /> } />
 
             </Switch>
                 </header>
