@@ -20,4 +20,26 @@ class Dish {
     }
 }
 
-export {Restaurant, Dish}
+class credit_card {
+    constructor(credit_id, customer_ID,card_number,cvv) {
+        this.customer_ID=customer_ID
+        this.card_number=card_number
+        this.credit_id=credit_id
+        this.cvv=cvv
+    }
+}
+
+class Address {
+
+    constructor(address_id, user_id, address_line1, state, zip_code) {
+        this.address_id = address_id
+        this.user_id = user_id
+        this.address_line1 = address_line1
+        this.state = state
+        this.zip_code = zip_code
+    }
+
+}
+
+
+export {Restaurant, Dish, credit_card, Address}

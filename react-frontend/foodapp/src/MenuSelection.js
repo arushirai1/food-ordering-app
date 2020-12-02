@@ -2,11 +2,15 @@ import React, { Component } from 'react'
 import App from "./App";
 import {Restaurant, Dish} from "./Models"
 import { Form, Button, ButtonGroup, ToggleButton, InputGroup, Card } from 'react-bootstrap';
-
+import {Cart} from './LandingPage'
 class MenuSelection extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {'special_dishes':[], 'regular_dishes':[]}
+    this.state = {'special_dishes':[], 'regular_dishes':[], 'selected_dishes':{}}
+  }
+  _test_function() {
+    console.log("test funct", this.state.selected_dishes)
+    return this.state.selected_dishes
   }
   componentDidMount() {
     //api call to fetch dishes with restaurant id, should pass through props from landing page
@@ -25,9 +29,23 @@ class MenuSelection extends React.Component {
     this.setState({'special_dishes':special_dishes, 'regular_dishes':regular_dishes})
   }
 
+  _addToOrder(dish) {
+    let x= [dish.dish_id, {'dish': dish, 'quantity':1}]
+    let y = this.state.selected_dishes
+
+    if(this.state.selected_dishes[dish.dish_id]) {
+      x[1].quantity = y[x[0]].quantity+x[1].quantity
+    }
+    y[x[0]]=x[1]
+    this.setState({'selected_dishes': y})
+    console.log(this.state.selected_dishes)
+  }
+
   render() {
     // learn about cards here https://react-bootstrap.github.io/components/cards/
     return (<div>
+      <Cart {...this.props} getSelectedDishes={this._test_function.bind(this)}/>
+
       <h1> MenuSelection </h1>
       <h1>Special</h1>
       {this.state.special_dishes.map((dish) => (
@@ -37,7 +55,7 @@ class MenuSelection extends React.Component {
                 <Card.Text>
                   {dish.description}
                 </Card.Text>
-                <Button variant="primary">Add to Order</Button>
+                <Button variant="primary" onClick={this._addToOrder.bind(this, dish)}>Add to Order</Button>
               </Card.Body>
             </Card>
       ))}
@@ -49,7 +67,7 @@ class MenuSelection extends React.Component {
                 <Card.Text>
                   {dish.description}
                 </Card.Text>
-                <Button variant="primary">Add to Order</Button>
+                <Button variant="primary" onClick={this._addToOrder.bind(this, dish)}>Add to Order</Button>
               </Card.Body>
             </Card>
       ))}
