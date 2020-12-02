@@ -31,11 +31,10 @@ class credit_card {
 
 class Address {
 
-    constructor(address_id, user_id, address_line1, city, state, zip_code) {
+    constructor(address_id, user_id, address_line1, state, zip_code) {
         this.address_id = address_id
         this.user_id = user_id
         this.address_line1 = address_line1
-        this.city = city
         this.state = state
         this.zip_code = zip_code
     }

@@ -4,38 +4,11 @@ import {Restaurant, credit_card, Address} from "./Models"
 import { Form, Button, ButtonGroup, ToggleButton, InputGroup, Card, Modal } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom'
 
-class Payment extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {'restaurants': []}
-    }
-
-    componentDidMount() {
-        //api call to fetch restaurants
-        console.log(this.props)
-        this.setState({
-            restaurants: [new Restaurant(1, "PizzaParlor", "West Loop", "Most amazing burnt pizza in the world."),
-                new Restaurant(2, "Pizza Parlor2", "West Loop2", "2nd most amazing burnt pizza in the world."),
-                new Restaurant(3, "Cure Pizza Addiction Restaurant", "West Loop3", "We make sure you end up hating pizza after this.")
-            ]
-        })
-    }
-
-    _onRestaurantSelect(restaurant_id) {
-        console.log(this.props)
-        this.props.history.push({
-            pathname: "/menuSelection",
-            state: {
-                restaurant_id: restaurant_id
-            }
-        })
-    }
-}
 class CheckoutView extends React.Component {
     constructor(props) {
         super(props);
-        this.state={'option':'Cash', 'selected_card': null, 'cards':[], 'addresses':[], 'selected_address': null, 'total_price':0, 'service':'Pickup'}
-
+        this.state={'option':'Cash', 'selected_card': null, 'cards':[], 'addresses':[], 'selected_address': null, 'total_price':0, 'service':'Pickup', 'rewards': 223}
+        this._addAddress.bind(this)
     }
 
     componentDidMount() {
@@ -98,6 +71,44 @@ class CheckoutView extends React.Component {
             )
         }
     }
+    _checkOut() {
+        //send order
+        let wait_time=0
+        let copy_of_state = {...this.state}
+        if(Object.keys(this.props.location.state).includes("selected_checkout")) {
+
+            let dictionary= this.props.location.state.selected_checkout
+            console.log("enters")
+            Object.keys(dictionary).forEach((pair)=> (wait_time+=dictionary[pair].dish.cooking_time))
+        }
+        //back to home with modal open
+        this.props.history.push({
+            pathname: "/listing",
+            state: {
+                order: copy_of_state,
+                selected_items: this.props.location.state.selected_checkout,
+                wait_time: wait_time,
+                modal: true
+            }
+        })
+    }
+    _useRewards() {
+        this.setState({'total_price': this.state.total_price - Math.floor(this.state.rewards/100), 'rewards':this.state.rewards%100})
+    }
+    _addAddress() {
+    //const selectedIndex = event.target.options.selectedIndex;
+        let id=Math.floor(Math.random() * 200)
+        let address=new Address( id, 1, document.getElementById('addLine1').value, document.getElementById('state').value, document.getElementById('zip').value);
+        console.log(this.state.addresses.push(address))
+        console.log(this.state.addresses)
+        this.setState({selected_address:address})
+    }
+    _getDefault() {
+        if(this.state.selected_address) {
+            return this.state.selected_address.address_line1
+        }
+        return "None"
+    }
         _renderAddress (){
             if(this.state.service === 'Delivery') {
                 return (<div>
@@ -106,15 +117,16 @@ class CheckoutView extends React.Component {
                             <Form.Label>
                                 Enter Address OR
                             </Form.Label>
-                            <Form.Control key="addLine1" type="text" placeholder="Enter address line 1" />
-                            <Form.Control key="state" type="text" placeholder="Enter state" />
-                            <Form.Control key="zip" type="text" placeholder="Enter zip" />
+                            <Form.Control id="addLine1" type="text" placeholder="Enter address line 1" />
+                            <Form.Control id="state" type="text" placeholder="Enter state" />
+                            <Form.Control id="zip" type="text" placeholder="Enter zip" />
 
                         </Form.Group>
+                        <Button onClick={this._addAddress.bind(this)}>Add Address</Button>
                         <Form.Group controlId="addressSelect">
                             <Form.Label>Select existing address</Form.Label>
                             <Form.Control as="select">
-                                <option>None</option>
+                                <option>{this._getDefault()}</option>
                                 {this.state.addresses.map((card)=>(<option>{card.address_line1}</option>))}
                             </Form.Control>
                         </Form.Group>
@@ -124,7 +136,9 @@ class CheckoutView extends React.Component {
     }
     render() {
         return (<div>
-            <h1>Total Price: {this.state.total_price}</h1>
+            <div>            <h1>Rewards: {this.state.rewards}</h1> <Button onClick={this._useRewards.bind(this)}>Apply Rewards</Button> </div>
+            <h1>Total Price: ${this.state.total_price} </h1>
+            <h3>Potential Rewards from this order: {Math.floor(this.state.total_price/2)}</h3>
             <h1>Payment</h1>
                 <Form.Group controlId="choosePaymentMethod">
                     <Form.Label>
@@ -155,6 +169,10 @@ class CheckoutView extends React.Component {
                 </Form.Group>
             {this._renderAddress()}
 
+        <div>            <Button>Go Back</Button>
+
+            <Button style={{marginLeft:"20px"}} onClick={this._checkOut.bind(this)}>Checkout</Button>
+            </div>
         </div>)
     }
 
