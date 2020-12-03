@@ -55,15 +55,13 @@ class Address(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     address_line1 = db.Column(db.String())
-    city = db.Column(db.String())
     state = db.Column(db.String())
     zip_code = db.Column(db.Integer)
 
-    def __init__(self, address_id, user_id, address_line1, city, state, zip_code):
+    def __init__(self, address_id, user_id, address_line1, state, zip_code):
         self.address_id = address_id
         self.user_id = user_id
         self.address_line1 = address_line1
-        self.city = city
         self.state = state
         self.zip_code = zip_code
 
@@ -76,7 +74,6 @@ class Address(db.Model):
             'address_id': self.address_id,
             'user_id': self.user_id,
             'address_line1': self.address_line1, 
-            'city': self.city,
             'state': self.state,
             'zip_code': self.zip_code
         }
@@ -245,14 +242,12 @@ class credit_card(db.Model):
     credit_id = db.Column(db.Integer, primary_key=True)
     customer_ID =db.Column(db.Integer, db.ForeignKey(Users.user_id))
     card_number=db.Column(db.Integer)
-    expiration_date=db.Column(db.String())
     cvv=db.Column(db.Numeric)
 
-    def __init__ (self,credit_id, customer_ID,card_number,expiration_date,cvv):
+    def __init__ (self,credit_id, customer_ID,card_number,cvv):
         self.customer_ID=customer_ID
         self.card_number=card_number
         self.credit_id=credit_id
-        self.expiration_date=expiration_date
         self.cvv=cvv
 
     def __repr__(self):
@@ -263,7 +258,6 @@ class credit_card(db.Model):
             'credit_id': self.credit_id,
             'customer_ID': self.customer_ID,
             'card_number': self.card_number,
-            'expiration_date': self.expiration_date,
             'cvv': self.cvv,
         }
 
