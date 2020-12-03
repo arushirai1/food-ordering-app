@@ -8,6 +8,7 @@ import pdb
 import secrets
 import helper_methods
 import json
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
@@ -47,21 +48,24 @@ import pdb
 session={'user_id': 0, 'state': 'CA', 'cart': []}
 #pdb.set_trace()
 
+CORS(app, support_credentials=True)
 
 @app.route('/')
 def index():
     return 'Hello World'
 @app.route('/login', methods=["GET"])
+@cross_origin(supports_credentials=True)
 def login():
     username = str(request.args.get("username", ""))
     password = str(request.args.get("password", ""))
 
     user_id=db_methods.validate_login(db, username, password)
     if(user_id == None):
-        return "fail"
+        return "FAIL: wrong credentials"
     return str(user_id)
 
 @app.route('/create_user', methods=["GET"])
+@cross_origin(supports_credentials=True)
 def create_user():
     role = str(request.args.get("role", ""))
     username = str(request.args.get("username", ""))
@@ -69,7 +73,7 @@ def create_user():
 
     user_id=db_methods.create_user(db, role, username, password)
     if(user_id == None):
-        return "fail"
+        return "FAIL: existing user"
     return str(user_id)
 #-------------------------------------------
 

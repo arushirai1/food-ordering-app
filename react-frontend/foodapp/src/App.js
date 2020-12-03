@@ -9,6 +9,8 @@ import {MenuSelection} from './MenuSelection'
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import {CheckoutView} from './CheckoutScreen'
+import {backend_server_url, detect_fail} from "./config";
+const axios = require('axios');
 
 //do this to import props
 const CustomerLandingWithRouter = withRouter(CustomerLanding);
@@ -20,7 +22,7 @@ const CheckoutViewWithRouter = withRouter(CheckoutView);
 class Login extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { option: "Customer", extraComponent: false};
+        this.state = { option: "Customer", extraComponent: false, error: ""};
     }
     goToCustomerView() {
         if(this.state.option === 'Customer') {
@@ -65,14 +67,43 @@ class Login extends React.Component {
         }
 
     }
-    _onButtonClick(button_id) {
+    async getValidation(username, password) {
+        const response =
+            await axios.get(backend_server_url+""+"login", {params: {role: this.state.option, username: username, password: password}})
+        return response.data
+
+    }
+    async createUser(username, password) {
+        const response =
+            await axios.get(backend_server_url+""+"create_user", {params: {role: this.state.option, username: username, password: password}})
+        return response.data
+
+    }
+    async _onButtonClick(button_id) {
+        let username=document.getElementById('formBasicUsername').value
+        let password = document.getElementById('formBasicPassword').value
+
         if(button_id==="sign_in") {
             //take fields and send call to backend server
+            let results=await this.getValidation(username, password)
+            console.log("results", results)
             //if verified then proceed to next screen, else throw validation error and ask client to enter inputs again
-            this.goToCustomerView()
+            if(detect_fail(results)) {
+                this.setState({"error": results})
+            } else {
+                this.goToCustomerView()
+            }
         } else if (button_id==="submit") {
+            //create_user
             //send signup info to backend and then proceed to the next screen like sign_in
-            this.goToCustomerView()
+            let results=await this.createUser(username, password)
+            console.log("results", results)
+            //if verified then proceed to next screen, else throw validation error and ask client to enter inputs again
+            if(detect_fail(results)) {
+                this.setState({"error": results})
+            } else {
+                this.goToCustomerView()
+            }
         }
         else {
             //sign up add extra component
@@ -111,6 +142,7 @@ class Login extends React.Component {
                 {this.renderExtra()}
 
             </Form>
+            <h3 id="error" style={{color:'red'}}>{this.state.error}</h3>
         </div>);
     }
 }
