@@ -1,16 +1,62 @@
 
 import pdb
+def cString(arg):
+	return "'"+str(arg)+"'"
 
+def validateFields(arr):
+	for field in arr:
+		if (len(str(field).split(" ")) != 1):
+			return True
+	return False
+# -------------------------------
 def validate_login(db,username, password):
-    sql_string="select u_id,username,user_password from Users;"
-    results= db.engine.execute(sql_string)
-    for row in results:
-        user_id=row.u_id
-        #pdb.set_trace()
-        if username == row.username and password == row.user_password:
-            return user_id
-    return 0
+	if (validateFields([username, password])):
+		return "FAIL: attack"
+	else:
+		sql_string="select user_id,username,password from Users;"
+		results= db.engine.execute(sql_string)
+		for row in results:
+			user_id=row.user_id
+			#pdb.set_trace()
+			if username == row.username and password == row.password:
+				return user_id
+		return None
 
+def username_exists(db, username):
+	sql_string = "select user_id,username from Users;"
+	results = db.engine.execute(sql_string)
+	for row in results:
+		user_id = row.user_id
+		# pdb.set_trace()
+		if username == row.username:
+			return True
+	return False
+
+def create_user(db,role,username, password):
+	if (validateFields([username, password, role])):
+		return "FAIL: attack"
+	elif (role not in ['Customer']):
+		return "FAIL: Sorry can't create account for roles other than Customer"
+	else:
+		sql_max = "Select max(user_id) from Users;"
+		max_id = db.engine.execute(sql_max)
+		row = max_id.fetchone()  # loop only runs once
+		print("test", row)
+		if row[0] != None:
+			print("test", row)
+			next_primary_key = row.max + 1
+		else:
+			next_primary_key=1
+		if not username_exists(db, username):
+			sql_string = "insert into Users values( " + str(next_primary_key) + "," + cString(role) + "," + cString(
+				username) + "," + cString(password) + ");"
+
+			db.engine.execute(sql_string)
+
+			return next_primary_key
+		else:
+			return "FAIL: Username exists"
+	return "FAIL:"
 
 def get_products(db):
 	sql_string = "select * from Product;"

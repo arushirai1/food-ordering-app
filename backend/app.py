@@ -51,6 +51,27 @@ session={'user_id': 0, 'state': 'CA', 'cart': []}
 @app.route('/')
 def index():
     return 'Hello World'
+@app.route('/login', methods=["GET"])
+def login():
+    username = str(request.args.get("username", ""))
+    password = str(request.args.get("password", ""))
+
+    user_id=db_methods.validate_login(db, username, password)
+    if(user_id == None):
+        return "fail"
+    return str(user_id)
+
+@app.route('/create_user', methods=["GET"])
+def create_user():
+    role = str(request.args.get("role", ""))
+    username = str(request.args.get("username", ""))
+    password = str(request.args.get("password", ""))
+
+    user_id=db_methods.create_user(db, role, username, password)
+    if(user_id == None):
+        return "fail"
+    return str(user_id)
+#-------------------------------------------
 
 @app.route('/delete-credit-card', methods=["GET"])
 def delete_credit_card():
