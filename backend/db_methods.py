@@ -114,7 +114,7 @@ def get_payment_details(db, user_id):
 
 	return products 
 
-def add_credit_card(db,user_id,card_number,street_address,city,state,zip_code):
+def add_credit_card(db,user_id,card_number,street_address,state,zip_code, city="default city"):
 	sql_max="Select max(credit_id) from Credit_card;"
 	max_id=db.engine.execute(sql_max)
 	print("test")
