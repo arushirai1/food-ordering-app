@@ -1,7 +1,5 @@
 2020 Software Engineering Project to build a online restaurant food ordering app. 
 
-Then, run each file individually for each screen
-
 To clone the repo:
 
 ```https://github.com/arushirai1/food-ordering-app ```
